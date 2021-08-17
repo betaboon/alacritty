@@ -46,7 +46,7 @@ impl RenderList {
 
             let render_item = RenderPosition {
                 column: cell.point.column,
-                line: cell.point.line,
+                line: Line(cell.point.line as i32),
                 offset_x: graphic.offset_x,
                 offset_y: graphic.offset_y,
             };

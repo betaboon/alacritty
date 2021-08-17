@@ -1772,7 +1772,7 @@ impl<T: EventListener> Handler for Term<T> {
     }
 
     #[inline]
-    fn graphics_attribute<W: io::Write>(&mut self, writer: &mut W, pi: u16, pa: u16) {
+    fn graphics_attribute(&mut self, pi: u16, pa: u16) {
         // From Xterm documentation:
         //
         //   Pi = 1  -> item is number of color registers.
@@ -1793,13 +1793,14 @@ impl<T: EventListener> Handler for Term<T> {
             (2, &[][..]) // Report error in Pa
         };
 
-        let _ = write!(writer, "\x1b[?{};{}", pi, ps);
+        let mut text = format!("\x1b[?{};{}", pi, ps);
 
         for item in pv {
-            let _ = write!(writer, ";{}", item);
+            let _ = write!(&mut text, ";{}", item);
         }
 
-        let _ = write!(writer, "S");
+        text.push('S');
+        self.event_proxy.send_event(Event::PtyWrite(text));
     }
 
     fn start_sixel_graphic(&mut self, params: &Params) -> Option<Box<sixel::Parser>> {
@@ -1859,7 +1860,7 @@ impl<T: EventListener> Handler for Term<T> {
                 self.grid.cursor.point.line
             } else {
                 // Check if the image is beyond the screen limit.
-                if top >= self.screen_lines().0 {
+                if top >= self.screen_lines() as i32 {
                     break;
                 }
 

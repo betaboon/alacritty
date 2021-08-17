@@ -463,7 +463,7 @@ pub trait Handler {
     fn text_area_size_chars(&mut self) {}
 
     /// Report a graphics attribute.
-    fn graphics_attribute<W: io::Write>(&mut self, _: &mut W, _: u16, _: u16) {}
+    fn graphics_attribute(&mut self, _: u16, _: u16) {}
 
     /// Create a parser for Sixel data.
     fn start_sixel_graphic(&mut self, _params: &Params) -> Option<Box<sixel::Parser>> {
